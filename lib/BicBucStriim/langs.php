@@ -1,6 +1,6 @@
 <?php
 # Generated file. Please don't edit here,
-# edit messages.yml instead. 
+# edit messages.yml instead.
 #
 $langde = array(
 'admin' => 'Konfiguration',
@@ -59,7 +59,7 @@ $langde = array(
 'admin_userpw' => 'Passwort',
 'admin_userpw_expl' => 'Plichtfeld, darf nicht leer sein',
 'admin_userlangs_expl' => 'Optional, schränkt die Anzeige auf Bücher mit dieser Sprache ein',
-'admin_usertags_expl' => 'Optional, schließt Bücher mit diesem Schlagwort von der Anzeige aus',
+'admin_usertags_expl' => 'Optional, schränkt die Anzeige auf Bücher mit diesem Schlagwort ein',
 'admin_users' => 'Benutzer',
 'admin_users_legend1' => 'Neuen Benutzer hinzufügen',
 'admin_users_legend2' => 'Benutzerkonten ändern oder löschen',
