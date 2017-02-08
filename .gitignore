@@ -11,3 +11,8 @@ screenshot*
 composer.phar
 .idea
 *.iml
+/.settings/
+/data/
+
+data/data.db
+.project
