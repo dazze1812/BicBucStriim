@@ -2176,14 +2176,14 @@ function title_forbidden($book_details)
             }
         }
         if (!empty($user['tags'])) {
-            $tag_found = false;
+            $tag_forbidden = true;
             foreach ($book_details['tags'] as $tag) {
                 if ($tag->name === $user['tags']) {
-                    $tag_found = true;
+                    $tag_forbidden = false;
                     break;
                 }
             }
-            if ($tag_found) {
+            if ($tag_forbidden) {
                 return true;
             }
         }
