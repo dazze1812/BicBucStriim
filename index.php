@@ -34,14 +34,14 @@ $fallbackLang = 'en';
 # Application Name
 $appname = 'BicBucStriim';
 # App version
-$appversion = '1.4.0a';
+$appversion = '1.4.1';
 
 # Init app and routes
 $app = new \Slim\Slim(array(
     'view' => new \Slim\Views\Twig(),
-    #'mode' => 'production',
+    'mode' => 'production',
     #'mode' => 'debug',
-    'mode' => 'development',
+    #'mode' => 'development',
 ));
 
 $app->configureMode('production', 'confprod');
@@ -391,9 +391,9 @@ function admin_modify_idtemplate($id)
     global $app;
 
     // parameter checking
-    if (!preg_match('/^\w+$/',$id)) {
+    if (!preg_match('/^\w+$/u',$id)) {
         $app->getLog()->warn('admin_modify_idtemplate: invalid template id ' . $id);
-        $app->halt(400, "Bad parameter");
+        $app->halt(400, "Invalid ID for template: "+$id);
     }
 
     $template_data = $app->request()->put();
@@ -430,9 +430,9 @@ function admin_clear_idtemplate($id)
     global $app;
 
     // parameter checking
-    if (!preg_match('/^\w+$/',$id)) {
+    if (!preg_match('/^\w+$/u',$id)) {
         $app->getLog()->warn('admin_clear_idtemplate: invalid template id ' . $id);
-        $app->halt(400, "Bad parameter");
+        $app->halt(400, "Invalid ID for template: "+$id);
     }
 
     $app->getLog()->debug('admin_clear_idtemplate: ' . var_export($id, true));
@@ -1123,11 +1123,25 @@ function titlesSlice($index = 0)
         'sort' => $sort));
 }
 
+# Creates a human readable filesize string
+function human_filesize($bytes, $decimals = 0) {
+    $size = array('B','KB','MB','GB','TB','PB','EB','ZB','YB');
+    $factor = floor((strlen($bytes) - 1) / 3);
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+}
+
 # Show a single title > /titles/:id. The ID ist the Calibre ID
 function title($id)
 {
     global $app, $globalSettings;
 
+    // Add filter for huma nreadable filesize
+    $filter = new Twig_SimpleFilter('hfsize', function ($string) { 
+                                                                    return human_filesize($string);
+                                                                 });
+    $tenv = $app->view->getEnvironment();
+    $tenv->addFilter($filter);
+    
     // parameter checking
     if (!is_numeric($id)) {
         $app->getLog()->warn('title: invalid title id ' . $id);
@@ -1486,6 +1500,9 @@ function authorDetailsSlice($id, $index = 0)
         $app->notFound();
     }
     $books = array_map('checkThumbnail', $tl['entries']);
+
+    $series = $app->calibre->authorSeries($id, $books);
+
     $author = $tl['author'];
     $author->thumbnail = $app->bbs->getAuthorThumbnail($id);
     $note = $app->bbs->authorNote($id);
@@ -1506,6 +1523,7 @@ function authorDetailsSlice($id, $index = 0)
         'url' => 'authors/' . $id,
         'author' => $tl['author'],
         'books' => $books,
+        'series' => $series,
         'curpage' => $tl['page'],
         'pages' => $tl['pages'],
         'isadmin' => is_admin()));
